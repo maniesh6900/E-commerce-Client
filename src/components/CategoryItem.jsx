@@ -11,10 +11,10 @@ const Container = styled.div`
  
 `;
 const Image = styled.img`
-  width :100%;
-  heigth: 100%;
+  width : 100%;
+  height : 600px;
   border-radius: 7px;
-  object-fit: cover;
+  object-fit: contain;
 `;
 const Info = styled.div`
   position : absolute;
