@@ -24,7 +24,7 @@ useEffect(()=>{
     const getProducts = async () =>{
       try {
         const res = await axios.get( cat ? 
-          `http://localhost:4000/products?categories=${cat}` : "http://localhost:4000/products");
+          `https://e-commerce-backend-45m8.onrender.com/products?categories=${cat}` : "https://e-commerce-backend-45m8.onrender.com/products");
         setProducts(res.data); 
       } catch (error) {
       }
