@@ -1,140 +1,155 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { useNavigate } from 'react-router-dom';
-import {useDispatch, useSelector} from "react-redux"
-import {login} from "../redux/apiCalls"
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { login } from '../redux/apiCalls'
 
 const Container = styled.div`
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`; 
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 30px);
+  background: var(--bg);
+`;
 
-const Wrapper = styled.div`
-    width: 40%;
-    padding : 20px;
-`; 
+const Card = styled.div`
+  width: min(520px, 92vw);
+  padding: clamp(24px, 5vw, 36px);
+  border-radius: 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+`;
 
-const Title = styled.h1``; 
+const Title = styled.h1`
+  margin: 0 0 6px;
+`;
+
+const Subtitle = styled.p`
+  margin: 0 0 18px;
+  color: var(--muted);
+`;
 
 const Form = styled.form`
-    display: flex; 
-    flex-direction: column;
-`; 
-
-const UserContainer  = styled.div`
-    border: 3px solid teal;
-    margin: 10px 0px;
-    border-radius: 4px;
-    
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 `;
-    
-    
-const PassConstainer  = styled.div`
-    border: 3px solid teal;
-    margin: 15px 0px;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-   
-    
+
+const Field = styled.div`
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  background: var(--panel);
+  overflow: hidden;
 `;
 
 const Input = styled.input`
-    flex: 1;
-    padding: 10px;
-    border: none;
-    width: 96.2%;
-    
-    
-    &:focus{
-    outline: none;
-    }
+  flex: 1;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
 
-`; 
-const Span = styled.span`
-    padding: 0px 5px;
-    color: teal;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const Toggle = styled.span`
+  padding: 0 12px;
+  color: var(--muted);
+  cursor: pointer;
 `;
 
 const Button = styled.button`
-    padding : 10px;
-    font-size: 14px;
-    background-color: teal;
-    width: 40%;
-    cursor: pointer;
-    color: white;
-    font-weight: 700;
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(130deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 150ms ease;
 
-    &:disabled{
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
-    }
-`; 
+  }
+`;
 
-const Link = styled.p`
-    margin : 8px 0px;
-    text-decoration: underline;
-    cursor: pointer;
-`; 
+const LinkText = styled.p`
+  margin: 6px 0;
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--muted);
+`;
+
+const ErrorText = styled.span`
+  color: var(--accent-2);
+`;
 
 const Login = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { isFetching, error, currentUser } = useSelector((state) => state.user)
 
-const navigate = useNavigate()
-const [password, setPassword] = useState("")
-const [username, setUsername] = useState("")
-const dispatch = useDispatch(); 
-const {isFatching, error} = useSelector((state)=>state.user)
+  const [username, setUsername] = useState('')
+  const [passwordValue, setPasswordValue] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
-const HandleLogin = () => {
-    setPassword(!password)
-}
+  useEffect(() => {
+    if (currentUser) navigate('/')
+  }, [currentUser, navigate])
 
-const handleClick =  (e) => {
-    e.preventDefault();
-    console.log("hello")
-    login(dispatch, {username, password }); 
-}
+  const handleClick = (e) => {
+    e.preventDefault()
+    login(dispatch, { username, password: passwordValue }).catch(() => {})
+  }
 
   return (
     <Container>
-        <Wrapper>
-            <Title>Login</Title>
-            <Form>
-            <UserContainer>
-            <Input placeholder="UserName"
-             onChange={(e)=>setUsername(e.target.value)}
+      <Card className='glass'>
+        <Title>Welcome back</Title>
+        <Subtitle>Sign in to access your saved looks and faster checkout.</Subtitle>
+        <Form>
+          <Field>
+            <Input
+              placeholder='Username'
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-            </UserContainer>   
-            <PassConstainer>
-                <Input type={password ? "text" : "password"} 
-                placeholder="Password" 
-                onChange={(e)=>setPassword(e.target.value)}
-                />
-                <Span 
-                onClick={HandleLogin}>
-                {password ? <VisibilityOffIcon/> 
-                : <RemoveRedEyeIcon/> }
-                </Span> 
-            </PassConstainer>
+          </Field>
+          <Field>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              placeholder='Password'
+              value={passwordValue}
+              onChange={(e) => setPasswordValue(e.target.value)}
+            />
+            <Toggle onClick={() => setShowPassword((p) => !p)}>
+              {showPassword ? <VisibilityOffIcon /> : <RemoveRedEyeIcon />}
+            </Toggle>
+          </Field>
 
-            <Button 
-            onClick={handleClick} 
-            disabled={isFatching}
-            >
-            Login</Button>
-            {error && <span style={{color: "red"}}>Something went wrong..</span> }
-            <Link>Don't remember Password</Link>
-            <Link 
-            onClick={()=>navigate('../register')}
-            >
-            Create New Account</Link>
-            </Form>
-        </Wrapper>
+          <Button onClick={handleClick} disabled={isFetching}>
+            {isFetching ? 'Signing in...' : 'Login'}
+          </Button>
+          {error && <ErrorText>Invalid credentials. Try again.</ErrorText>}
+          <LinkText onClick={() => navigate('../register')}>Create new account</LinkText>
+        </Form>
+      </Card>
     </Container>
   )
 }

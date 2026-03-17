@@ -1,74 +1,60 @@
-import { useState, useEffect } from "react";
-import StripeCheckout from 'react-stripe-checkout';
-import styled from "styled-components";
-import axios  from "axios";
-import { useNavigate } from "react-router-dom";
+import React from 'react'
+import styled from 'styled-components'
+import Navbar from '../components/Navbar'
+import Announcment from '../components/annoucment'
+import Footer from '../components/footer'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import axios from 'axios'
 
-
-const Container = styled.div`
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: teal;
+const Container = styled.div``;
+const Wrapper = styled.div`
+    padding: 20px;
 `;
+
+const Title = styled.h1`
+    font-weight: 300;
+    text-align: center;
+`;
+
 const Button = styled.button`
-  height : 90px;
-  width: 90px;
-  border-radius: 10px;
-  font-size: 20px;
-  font-weight: 600;
-  color: teal;
-  border: none;
+    width: 100%;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    font-weight: 600;
 `;
 
+const Pay = () => {
+  const location = useLocation()
+  const { stripeData, products } = location.state || {}
 
-const pay = () => {
-
-const KEY = "pk_test_51Q0L4BP8kFU3Mu0OKQ9vEyusLun08mL1l4a0Vr2DissxPA4rUpT9zqes7kVXk64YjrWv9nANjKA6buZ26b3D7zCi00wpdPfhE5"
-const navigate = useNavigate();
-const [stripeToken, setStripeToken] = useState(null);
-
-const onToken = (token) =>{
-  setStripeToken(token)         
-}
-
-useEffect(() => {
-  const makeRequest = async () =>{
-    try {
-      const res = await axios.post('http://localhost:4000/payment/checkout',
-        {
-        tokenId: stripeToken.id,
-        amount: 2000,
-      });
-      console.log(res.data);
-      navigate('/success')
-      } catch (err) {
-      console.log(err)
-      }};
-    stripeToken && makeRequest();
-  },[stripeToken]);
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await axios.post('https://e-commerce-backend-8xl7.onrender.com/payment/checkout', {
+          tokenId: stripeData.id,
+          amount: products.total * 100,
+        })
+        console.log(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if (stripeData) makeRequest()
+  }, [stripeData, products])
 
   return (
     <Container>
-      {stripeToken ? (<span>processing Please wait ...</span>) : (
-        <StripeCheckout
-        name="THIEF'S"
-        image="vite.svg"
-        billingAddress
-        shippingAddress
-        description = "Your total is $20"
-        amount = {2000}
-        token = {onToken}
-        stripeKey={KEY}
-        >
-        <Button>Pay</Button>
-        </StripeCheckout>
-      )}
+      <Navbar />
+      <Announcment />
+      <Wrapper>
+        <Title>Processing payment...</Title>
+        <Button disabled>Processing</Button>
+      </Wrapper>
+      <Footer />
     </Container>
-    
-
   )
 }
 
-export default pay
+export default Pay

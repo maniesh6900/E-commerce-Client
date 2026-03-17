@@ -1,103 +1,137 @@
 import React from 'react'
 import styled from 'styled-components'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Search from '@mui/icons-material/Search';
-import FavoriteBorder  from '@mui/icons-material/FavoriteBorder';
-import { Link, useLocation } from 'react-router-dom';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import Search from '@mui/icons-material/Search'
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
+import { Link } from 'react-router-dom'
 
-const Info = styled.div`
-  opacity: 0;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top : 0;
-  left : 0;
-  z-index: 3;
-  display: flex;
-  justify-content: center;
-  align-items : center;
-  cursor: pointer;
-  `; 
-
-const Container = styled.div`
-  flex: 1;
-  border-radius: 7px;
-  margin : 5px;
-  min-width: 280px;
-  height: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f5fbfd;
+const Card = styled.div`
   position: relative;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 
-  &:hover ${Info}{
-  opacity: 1;
-
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
   }
-  `;
-  
-  const Circle= styled.div`
-  height: 200px;
-  width: 200px;
-  border-radius: 50%;
-  background-color: white;
-  position: absolute;
-  `;
-
-  const Image = styled.img`
-  height: 100%;
-  z-index : 2; 
-  width: 99%;
-  object-fit: cover;
 `;
 
-  const Icon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: white;
-  display:flex;
-  justify-content: center;
+const ImageWrap = styled.div`
+  position: relative;
+  height: 240px;
+  background: color-mix(in srgb, var(--panel) 85%, rgba(37, 99, 235, 0.05) 15%);
+  display: flex;
   align-items: center;
-  margin: 10px;
-  transition: all 0.5s ease;
+  justify-content: center;
+`;
 
-  &:hover{
-  background-color: #e9f5f5;
-  transform: scale(1.1);
+const Image = styled.img`
+  height: 200px;
+  width: 100%;
+  object-fit: contain;
+`;
+
+const Body = styled.div`
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Title = styled.h3`
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+`;
+
+const MetaRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Price = styled.span`
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--accent);
+`;
+
+const Chip = styled.span`
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+`;
+
+const Actions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+`;
+
+const IconButton = styled.button`
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--accent);
+    border-color: rgba(37, 99, 235, 0.4);
   }
-`; 
+`;
 
-
-
-const productsList = ({item}) => {
-
-
-
-  
+const ProductCard = ({ item }) => {
+  const priceValue = Number(item.price)
+  const displayPrice = Number.isFinite(priceValue) ? `$ ${priceValue.toFixed(2)}` : 'New in'
+  const category = item.categories?.[0] || item.color?.[0] || 'Essentials'
 
   return (
-    <Container>
-        <Circle>
-        <Image src={item.img}/>
-        <Info>
-            <Icon>
-                <ShoppingCartIcon />
-            </Icon>
-            <Icon>
-              <Link to={`/product/${item._id}`}>
-                <Search />
-              </Link>
-            </Icon>
-            <Icon>
-                <FavoriteBorder />
-            </Icon>
-        </Info>
+    <Card className='glass'>
+      <Actions>
+        <IconButton>
+          <ShoppingCartIcon fontSize='small' />
+        </IconButton>
+        <Link to={`/product/${item._id}`}>
+          <IconButton>
+            <Search fontSize='small' />
+          </IconButton>
+        </Link>
+        <IconButton>
+          <FavoriteBorder fontSize='small' />
+        </IconButton>
+      </Actions>
 
-        </Circle>
-    </Container>
+      <Link to={`/product/${item._id}`}>
+        <ImageWrap>
+          <Image src={item.img} alt={item.title || 'Product'} />
+        </ImageWrap>
+        <Body>
+          <Title>{item.title || 'Featured piece'}</Title>
+          <MetaRow>
+            <Price>{displayPrice}</Price>
+            <Chip>{category}</Chip>
+          </MetaRow>
+        </Body>
+      </Link>
+    </Card>
   )
 }
 
-export default productsList
+export default ProductCard
